@@ -3,539 +3,176 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>ä planner</title>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <title>Дартс Математика</title>
     <style>
-        /* Стили для основной структуры и элементов */
-        body {
-            font-family: 'Arial', sans-serif;
-            margin: 0;
-            padding: 0;
-            display: flex;
-            min-height: 100vh;
-            background-color: #f7f7f7;
-            color: #333;
-        }
-
-        #container {
-            display: flex;
-            flex: 1;
-        }
-
-        #sidebar {
-            width: 300px;
-            background-color: #fff;
-            box-shadow: 2px 0 5px rgba(0,0,0,0.1);
-            padding: 20px;
-            box-sizing: border-box;
-            position: fixed;
-            top: 0;
-            left: 0;
-            bottom: 0;
-            overflow-y: auto;
-        }
-
-        header {
-            display: flex; /* Использование flex для центрирования */
-            justify-content: center; /* Центрирование по горизонтали */
-            align-items: center; /* Центрирование по вертикали */
-            margin-bottom: 20px; /* Отступ снизу */
-        }
-
-        header h1 {
-            font-family: 'Lucida Handwriting', sans-serif;
-            margin: 0;
-            font-size: 24px;
-            color: #0A406B;
-        }
-
-        .icon-select {
-            display: flex;
-            gap: 10px;
-            margin-top: 5px;
-            flex-wrap: wrap;
-        }
-
-        .icon-select .icon {
-            padding: 5px;
-            border: 1px solid #ddd;
-            border-radius: 5px;
-            cursor: pointer;
-            font-size: 18px;
-            color: #0A406B; /* Изменение цвета иконок на #0A406B */
-        }
-
-        .icon-select .icon:hover {
-            background-color: #f0f0f0;
-        }
-
-        #calendar {
-            flex: 1;
-            margin-left: 320px; /* Учитываем ширину боковой панели */
-            padding: 20px;
-            box-sizing: border-box;
-            overflow-y: auto;
-        }
-
-        form {
-            display: flex;
-            flex-direction: column;
-        }
-
-        label {
-            margin-top: 10px;
-            font-weight: bold;
-        }
-
-        input[type="text"], input[type="date"], textarea, select {
-            padding: 10px;
-            margin-top: 5px;
-            border: 1px solid #ddd;
-            border-radius: 5px;
-            width: 100%;
-            box-sizing: border-box;
-            background-color: #f9f9f9;
-        }
-
-        button {
-            background-color: #333;
-            color: white;
-            border: none;
-            border-radius: 5px;
-            padding: 10px;
-            cursor: pointer;
-            transition: background-color 0.3s;
-            margin-top: 10px;
-        }
-
-        button:hover {
-            background-color: #555;
-        }
-
-        #calendar h2 {
-            font-size: 24px;
-            margin-bottom: 20px;
-        }
-
-        .calendar-navigation {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 20px;
-        }
-
-        .calendar-grid {
-            display: grid;
-            grid-template-columns: repeat(7, 1fr);
-            gap: 10px;
-        }
-
-        .calendar-day {
-            border: 1px solid #ddd;
-            border-radius: 5px;
-            padding: 10px;
-            background-color: #ffffff; /* Фон для дня календаря */
-            min-height: 100px;
-            display: flex;
-            flex-direction: column;
-            justify-content: space-between;
-            position: relative;
-            cursor: pointer;
-            transition: background-color 0.3s;
-        }
-
-        .calendar-day:hover {
-            background-color: #f0f0f0;
-        }
-
-        .calendar-day h3 {
-            margin: 0;
-            font-size: 18px;
-            font-weight: bold;
-            color: #333;
-        }
-
-        .task-item {
-            margin-top: 5px;
-            padding: 5px;
-            border-radius: 5px;
-            font-size: 12px;
-            color: white;
-            box-shadow: 0 1px 2px rgba(0,0,0,0.05);
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-        }
-
-        .week-days {
-            display: grid;
-            grid-template-columns: repeat(7, 1fr);
-            text-align: center;
-            font-weight: bold;
-            margin-bottom: 10px;
-        }
-
-        .week-day {
-            color: #666;
-        }
-
-        #task-modal {
-            display: none;
-            position: fixed;
-            top: 0;
-            right: 0;
-            width: 400px;
-            height: 100vh;
-            background-color: rgba(255, 255, 255, 0.9);
-            box-shadow: -2px 0 10px rgba(0, 0, 0, 0.2);
-            padding: 20px;
-            box-sizing: border-box;
-            z-index: 2;
-            overflow-y: auto;
-        }
-
-        #task-modal h3 {
-            margin-top: 0;
-        }
-
-        .task-list {
-            list-style: none;
-            padding: 0;
-        }
-
-        .task-list li {
-            margin-bottom: 10px;
-            padding: 10px;
-            border-radius: 5px;
-            background-color: #e9ecef;
-            box-shadow: 0 1px 2px rgba(0,0,0,0.05);
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-        }
-
-        #close-modal {
-            background-color: #333;
-            color: white;
-            border: none;
-            border-radius: 5px;
-            padding: 10px;
-            cursor: pointer;
-            transition: background-color 0.3s;
-            position: absolute;
-            top: 10px;
-            right: 20px;
-        }
-
-        #close-modal:hover {
-            background-color: #555;
-        }
-
-        /* Новый стиль для выделенной задачи */
-        .highlighted-task {
-            border: 2px solid black;
-        }
-
-        /* Стиль для выделения сегодняшнего дня */
-        .today {
-            border: 2px solid maroon; /* Контура для сегодняшнего дня */
-        }
-
-        /* Стиль для отображения текущей даты и времени */
-        #current-date-time {
-            margin-top: 20px;
-            position: absolute;
-            bottom: 20px; /* Прикрепляем к низу бокового меню */
-            left: 20px; /* Отступ слева */
-        }
-
-        #current-time {
-            font-size: 24px; /* Большой шрифт для времени */
-            font-weight: bold;
-        }
-
-        #current-date {
-            font-size: 16px; /* Меньший шрифт для даты */
-            margin-top: 5px;
-        }
+        body { font-family: Arial, sans-serif; }
+        #question { font-size: 24px; margin: 20px 0; }
+        input[type="number"] { font-size: 18px; }
+        button { font-size: 18px; margin-top: 10px; }
+        #result { font-size: 20px; color: green; }
+        #error { font-size: 20px; color: red; }
     </style>
 </head>
 <body>
-    <div id="container">
-        <aside id="sidebar">
-            <header>
-                <h1>ä planner</h1>
-            </header>
-            <h2>Добавление задачи</h2>
-            <form id="task-form">
-                <label for="task-title">Название задачи:</label>
-                <input type="text" id="task-title" required>
-
-                <label for="task-icon">Тип задачи:</label>
-                <div class="icon-select" id="task-icon">
-                    <i class="fas fa-home icon" title="Дом"></i>
-                    <i class="fas fa-briefcase icon" title="Работа"></i>
-                    <i class="fas fa-book icon" title="Учеба"></i>
-                    <i class="fas fa-user icon" title="Личное"></i>
-                    <i class="fas fa-car icon" title="Машина"></i>
-                    <i class="fas fa-exclamation icon" title="Восклицательный знак"></i>
-                    <i class="fas fa-question icon" title="Вопросительный знак"></i>
-                </div>
-
-                <label for="task-description">Описание (опционально):</label>
-                <textarea id="task-description"></textarea>
-
-                <label for="task-deadline">Срок выполнения:</label>
-                <input type="date" id="task-deadline" required>
-
-                <label for="task-repeat">Повторяемость:</label>
-                <select id="task-repeat">
-                    <option value="none">Нет</option>
-                    <option value="daily">Ежедневно</option>
-                    <option value="weekly">Еженедельно</option>
-                    <option value="monthly">Ежемесячно</option>
-                </select>
-
-                <button type="submit">Добавить задачу</button>
-            </form>
-
-            <div id="current-date-time">
-                <div id="current-time"></div> <!-- Элемент для отображения времени -->
-                <div id="current-date"></div> <!-- Элемент для отображения даты -->
-            </div>
-        </aside>
-
-        <section id="calendar">
-            <div class="calendar-navigation">
-                <button id="prev-month">Предыдущий</button>
-                <h2 id="calendar-month-year"></h2>
-                <button id="next-month">Следующий</button>
-            </div>
-
-            <div class="week-days">
-                <div class="week-day">Понедельник</div>
-                <div class="week-day">Вторник</div>
-                <div class="week-day">Среда</div>
-                <div class="week-day">Четверг</div>
-                <div class="week-day">Пятница</div>
-                <div class="week-day">Суббота</div>
-                <div class="week-day">Воскресенье</div>
-            </div>
-
-            <div class="calendar-grid" id="calendar-content"></div>
-
-            <label for="search-task" style="margin-top: 20px; display: block;">Поиск задач:</label>
-            <input type="text" id="search-task" placeholder="Введите ключевое слово" style="width: 100%; margin-bottom: 20px;">
-        </section>
-    </div>
-
-    <div id="task-modal">
-        <button id="close-modal">Закрыть</button>
-        <h3>Задачи на <span id="modal-date"></span></h3>
-        <ul class="task-list" id="modal-task-list"></ul>
-    </div>
+    <h1>Учим дартс математику</h1>
+    <div id="question"></div>
+    <input type="number" id="answer" placeholder="Ваш ответ" />
+    <button onclick="checkAnswer()">Проверить</button>
+    <div id="result"></div>
+    <div id="error"></div>
 
     <script>
-        document.addEventListener('DOMContentLoaded', () => {
-            let tasks = JSON.parse(localStorage.getItem('tasks')) || [];
-            let currentMonth = new Date().getMonth();
-            let currentYear = new Date().getFullYear();
-            let selectedIcon = '';
+        const questions = [
+        { problem: 'T20 + T20 + Bull', answer: 170 },
+{ problem: 'T17 + T18 + D16', answer: 137 },
+{ problem: 'T18 + 18 + D16', answer: 104 },
+{ problem: 'T13 + D16', answer: 71 },
+{ problem: 'None', answer: 169 },
+{ problem: 'T20 + T20 + D8', answer: 136 },
+{ problem: 'T20 + 11 + D16', answer: 103 },
+{ problem: 'T18 + D8', answer: 70 },
+{ problem: 'None', answer: 168 },
+{ problem: 'T20 + T15 + D15', answer: 135 },
+{ problem: 'T20 + 10 + D16', answer: 102 },
+{ problem: 'T19 + D6', answer: 69 },
+{ problem: 'T20 + T19 + Bull', answer: 167 },
+{ problem: 'T20 + T14 + D16', answer: 134 },
+{ problem: 'T17 + 18 + D16', answer: 101 },
+{ problem: 'T16 + D10', answer: 68 },
+{ problem: 'None', answer: 166 },
+{ problem: 'T20 + T19 + D8', answer: 133 },
+{ problem: 'T20 + D20', answer: 100 },
+{ problem: 'T19 + 10 + D16', answer: 99 },
+{ problem: 'None', answer: 165 },
+{ problem: 'T20 + T20 + D6', answer: 132 },
+{ problem: 'T19 + D20', answer: 97 },
+{ problem: 'D16 + D16', answer: 64 },
+{ problem: 'None', answer: 162 },
+{ problem: 'T19 + T16 + D12', answer: 129 },
+{ problem: 'T20 + D18', answer: 96 },
+{ problem: 'T13 + D12', answer: 63 },
+{ problem: 'T20 + T17 + Bull', answer: 161 },
+{ problem: 'T18 + T18 + D10', answer: 128 },
+{ problem: 'T19 + D19', answer: 95 },
+{ problem: 'D10 + D16', answer: 62 },
+{ problem: 'T20 + T20 + D20', answer: 160 },
+{ problem: 'T20 + T17 + D8', answer: 127 },
+{ problem: 'T18 + D20', answer: 94 },
+{ problem: 'T15 + D8', answer: 61 },
+{ problem: 'None', answer: 159 },
+{ problem: 'T19 + T18 + Bull', answer: 126 },
+{ problem: 'T19 + D18', answer: 93 },
+{ problem: '20 + D20', answer: 60 },
+{ problem: 'T20 + T20 + D19', answer: 158 },
+{ problem: '25 + T20 + D20', answer: 125 },
+{ problem: 'T20 + D16', answer: 92 },
+{ problem: '19 + D20', answer: 59 },
+{ problem: 'T20 + T19 + D20', answer: 157 },
+{ problem: 'T20 + T14 + D11', answer: 124 },
+{ problem: 'T17 + D20', answer: 91 },
+{ problem: '18 + D20', answer: 58 },
+{ problem: 'T20 + T20 + D18', answer: 156 },
+{ problem: 'T19 + T16 + D9', answer: 123 },
+{ problem: 'T20 + D15', answer: 90 },
+{ problem: '17 + D20', answer: 57 },
+{ problem: 'T20 + T19 + D19', answer: 155 },
+{ problem: 'T18 + T20 + D4', answer: 122 },
+{ problem: 'T19 + D16', answer: 89 },
+{ problem: '16 + D20', answer: 56 },
+{ problem: 'T20 + T18 + D20', answer: 154 },
+{ problem: 'T20 + T11 + D14', answer: 121 },
+{ problem: 'T16 + D20', answer: 88 },
+{ problem: '15 + D20', answer: 55 },
+{ problem: 'T20 + T19 + D18', answer: 153 },
+{ problem: 'T20 + 20 + D20', answer: 120 },
+{ problem: 'T17 + D18', answer: 87 },
+{ problem: '13 + D20', answer: 53 },
+{ problem: 'T20 + T20 + D16', answer: 152 },
+{ problem: 'T19 + T12 + D13', answer: 119 },
+{ problem: 'T18 + D16', answer: 86 },
+{ problem: '14 + D20', answer: 54 },
+{ problem: 'T20 + T17 + D20', answer: 151 },
+{ problem: 'T20 + 18 + D20', answer: 118 },
+{ problem: 'T15 + D20', answer: 85 },
+{ problem: '13 + D20', answer: 53 },
+{ problem: 'T20 + T18 + D18', answer: 150 },
+{ problem: 'T20 + 17 + D20', answer: 117 },
+{ problem: 'T20 + D12', answer: 84 },
+{ problem: '12 + D20', answer: 52 },
+{ problem: 'T20 + T19 + D16', answer: 149 },
+{ problem: 'T20 + 16 + D20', answer: 116 },
+{ problem: 'T17 + D16', answer: 83 },
+{ problem: '11 + D20', answer: 51 },
+{ problem: 'T20 + T16 + D20', answer: 148 },
+{ problem: 'T20 + 15 + D20', answer: 115 },
+{ problem: 'T17 + D16', answer: 83 },
+{ problem: '10 + D20', answer: 50 },
+{ problem: 'T20 + T17 + D16', answer: 147 },
+{ problem: 'T18 + 20 + D20', answer: 114 },
+{ problem: 'T14 + D20', answer: 82 },
+{ problem: '9 + D20', answer: 49 },
+{ problem: 'T20 + T18 + D16', answer: 146 },
+{ problem: 'T19 + 16 + D20', answer: 113 },
+{ problem: 'T19 + D12', answer: 81 },
+{ problem: '8 + D20', answer: 48 },
+{ problem: 'T20 + T15 + D20', answer: 145 },
+{ problem: 'T20 + 12 + D20', answer: 112 },
+{ problem: 'T20 + D10', answer: 80 },
+{ problem: '15 + D16', answer: 47 },
+{ problem: 'T20 + T20 + D12', answer: 144 },
+{ problem: 'T20 + 11 + D20', answer: 111 },
+{ problem: 'T13 + D20', answer: 79 },
+{ problem: '14 + D16', answer: 46 },
+{ problem: 'T20 + T17 + D16', answer: 143 },
+{ problem: 'T20 + 10 + D20', answer: 110 },
+{ problem: 'T18 + D12', answer: 78 },
+{ problem: '13 + D16', answer: 45 },
+{ problem: 'T20 + T14 + D20', answer: 142 },
+{ problem: 'T20 + 9 + D20', answer: 109 },
+{ problem: 'T19 + D10', answer: 77 },
+{ problem: '12 + D16', answer: 44 },
+{ problem: 'T20 + T15 + D18', answer: 141 },
+{ problem: 'T20 + 9 + D20', answer: 109 },
+{ problem: 'T20 + D8', answer: 76 },
+{ problem: '11 + D16', answer: 43 },
+{ problem: 'T20 + T20 + D10', answer: 140 },
+{ problem: 'T18 + 14 + D20', answer: 108 },
+{ problem: 'T17 + D12', answer: 75 },
+{ problem: '10 + D16', answer: 42 },
+{ problem: 'T20 + T19 + D11', answer: 139 },
+{ problem: 'T19 + 10 + D20', answer: 107 },
+{ problem: 'T17 + D12', answer: 75 },
+{ problem: '9 + D16', answer: 41 },
+{ problem: 'T20 + T18 + D12', answer: 138 },
+{ problem: 'T20 + 14 + D16', answer: 106 },
+{ problem: 'T14 + D16', answer: 74 },
+{ problem: '8 + D16', answer: 40 },
+        ];
 
-            // Функция для обновления текущей даты и времени
-            function updateDateTime() {
-                const now = new Date();
-                const optionsDate = { year: 'numeric', month: 'long', day: 'numeric' };
-                const optionsTime = { hour: '2-digit', minute: '2-digit', second: '2-digit', hour12: false };
-                
-                document.getElementById('current-time').textContent = now.toLocaleString('ru-RU', optionsTime);
-                document.getElementById('current-date').textContent = now.toLocaleString('ru-RU', optionsDate);
+        let currentQuestionIndex = 0;
+
+        function displayQuestion() {
+            const questionElement = document.getElementById('question');
+            questionElement.textContent = `Какое число закрывается с помощью ${questions[currentQuestionIndex].problem}?`;
+            document.getElementById('answer').value = '';
+            document.getElementById('result').textContent = '';
+            document.getElementById('error').textContent = '';
+        }
+
+        function checkAnswer() {
+            const userAnswer = Number(document.getElementById('answer').value);
+            const correctAnswer = questions[currentQuestionIndex].answer;
+
+            if (userAnswer === correctAnswer) {
+                document.getElementById('result').textContent = 'Правильно!';
+                currentQuestionIndex = (currentQuestionIndex + 1) % questions.length;
+                displayQuestion();
+            } else {
+                document.getElementById('error').textContent = 'Неправильно, попробуйте еще раз!';
             }
+        }
 
-            setInterval(updateDateTime, 1000); // Обновляем каждую секунду
-            updateDateTime(); // Первоначальный вызов
-
-            document.querySelectorAll('#task-icon .icon').forEach(icon => {
-                icon.addEventListener('click', () => {
-                    document.querySelectorAll('#task-icon .icon').forEach(i => i.style.backgroundColor = '');
-                    icon.style.backgroundColor = '#e0e0e0';
-                    selectedIcon = icon.className;
-                });
-            });
-
-            function saveTasks() {
-                localStorage.setItem('tasks', JSON.stringify(tasks));
-            }
-
-            function getTaskBackgroundColor(iconClass) {
-                switch (true) {
-                    case iconClass.includes('fa-home'):
-                        return 'orange'; // Дом
-                    case iconClass.includes('fa-briefcase'):
-                        return 'brown'; // Работа
-                    case iconClass.includes('fa-book'):
-                        return 'Gold'; // Учеба
-                    case iconClass.includes('fa-user'):
-                        return 'green'; // Личное
-                    case iconClass.includes('fa-car'):
-                        return 'red'; // Машина
-                    case iconClass.includes('fa-exclamation'):
-                        return 'maroon'; // Восклицательный знак
-                    case iconClass.includes('fa-question'):
-                        return 'blue'; // Вопросительный знак
-                    default:
-                        return 'transparent'; // По умолчанию
-                }
-            }
-
-            function renderCalendar(filteredTasks = tasks) {
-                const calendarContent = document.getElementById('calendar-content');
-                calendarContent.innerHTML = '';
-
-                const monthNames = ["Январь", "Февраль", "Март", "Апрель", "Май", "Июнь", "Июль", "Август", "Сентябрь", "Октябрь", "Ноябрь", "Декабрь"];
-                document.getElementById('calendar-month-year').textContent = `${monthNames[currentMonth]} ${currentYear}`;
-
-                const firstDay = new Date(currentYear, currentMonth, 1).getDay();
-                const lastDate = new Date(currentYear, currentMonth + 1, 0).getDate();
-
-                // Добавление пустых ячеек в начале месяца
-                for (let i = 0; i < (firstDay === 0 ? 6 : firstDay - 1); i++) {
-                    const emptyCell = document.createElement('div');
-                    calendarContent.appendChild(emptyCell);
-                }
-
-                const today = new Date().getDate(); // Текущий день месяца
-
-                for (let date = 1; date <= lastDate; date++) {
-                    const dayElement = document.createElement('div');
-                    dayElement.className = 'calendar-day' + (date === today && currentMonth === new Date().getMonth() && currentYear === new Date().getFullYear() ? ' today' : ''); // Указать класс today для сегодняшнего дня
-                    const dateHeader = document.createElement('h3');
-                    dateHeader.textContent = date;
-                    dayElement.appendChild(dateHeader);
-
-                    const tasksForDate = filteredTasks.filter(task => {
-                        const taskDate = new Date(task.deadline);
-                        const isSameDate = taskDate.getDate() === date && taskDate.getMonth() === currentMonth && taskDate.getFullYear() === currentYear;
-                        const isRepeating = (
-                            (task.repeat === 'daily') ||
-                            (task.repeat === 'weekly' && taskDate.getDay() === new Date(currentYear, currentMonth, date).getDay()) ||
-                            (task.repeat === 'monthly' && taskDate.getDate() === date)
-                        );
-                        return isSameDate || isRepeating;
-                    });
-
-                    tasksForDate.forEach(task => {
-                        const taskItem = document.createElement('div');
-                        taskItem.className = `task-item`;
-                        taskItem.innerHTML = `<i class="${task.icon}"></i> ${task.title}`;
-                        taskItem.style.backgroundColor = getTaskBackgroundColor(task.icon); // Устанавливаем цвет фона
-                        dayElement.appendChild(taskItem);
-                    });
-
-                    dayElement.addEventListener('click', () => {
-                        showTaskModal(date, tasksForDate);
-                    });
-
-                    calendarContent.appendChild(dayElement);
-                }
-            }
-
-            function showTaskModal(date, tasksForDate) {
-                const modal = document.getElementById('task-modal');
-                const modalDate = document.getElementById('modal-date');
-                const modalTaskList = document.getElementById('modal-task-list');
-
-                modalDate.textContent = `${date}.${currentMonth + 1}.${currentYear}`;
-                modalTaskList.innerHTML = '';
-
-                tasksForDate.forEach((task, index) => {
-                    const taskListItem = document.createElement('li');
-                    taskListItem.innerHTML = `<i class="${task.icon}"></i> ${task.title} <button data-index="${tasks.indexOf(task)}" class="delete-task">Удалить</button>`;
-                    modalTaskList.appendChild(taskListItem);
-                });
-
-                modal.style.display = 'block';
-
-                document.querySelectorAll('.delete-task').forEach(button => {
-                    button.addEventListener('click', (e) => {
-                        const index = e.target.getAttribute('data-index');
-                        tasks.splice(index, 1);
-                        saveTasks();
-                        renderCalendar();
-                        showTaskModal(date, tasks.filter(task => {
-                            const taskDate = new Date(task.deadline);
-                            return taskDate.getDate() === date && taskDate.getMonth() === currentMonth && taskDate.getFullYear() === currentYear;
-                        }));
-                    });
-                });
-            }
-
-            document.getElementById('close-modal').addEventListener('click', () => {
-                document.getElementById('task-modal').style.display = 'none';
-            });
-
-            document.getElementById('task-form').addEventListener('submit', (e) => {
-                e.preventDefault();
-                const title = document.getElementById('task-title').value;
-                const description = document.getElementById('task-description').value;
-                const deadline = document.getElementById('task-deadline').value;
-                const repeat = document.getElementById('task-repeat').value;
-
-                if (title && deadline && selectedIcon) {
-                    tasks.push({ title, icon: selectedIcon, description, deadline, repeat });
-                    saveTasks();
-                    renderCalendar(); // Отображение задач в календаре
-                    e.target.reset();
-                } else {
-                    alert("Пожалуйста, заполните все поля и выберите символ задачи.");
-                }
-            });
-
-            document.getElementById('search-task').addEventListener('input', (e) => {
-                const searchTerm = e.target.value.toLowerCase();
-                const filteredTasks = tasks.filter(task => 
-                    task.title.toLowerCase().includes(searchTerm) ||
-                    task.description.toLowerCase().includes(searchTerm)
-                );
-
-                renderCalendar(filteredTasks);
-
-                // Снять выделение с всех задач
-                document.querySelectorAll('.task-item').forEach(item => {
-                    item.classList.remove('highlighted-task');
-                });
-
-                // Выделить подходящие задачи
-                if (searchTerm) {
-                    document.querySelectorAll('.task-item').forEach(item => {
-                        const taskTitle = item.textContent.toLowerCase();
-                        if (taskTitle.includes(searchTerm)) {
-                            item.classList.add('highlighted-task');
-                        }
-                    });
-                }
-            });
-
-            document.getElementById('prev-month').addEventListener('click', () => {
-                currentMonth--;
-                if (currentMonth < 0) {
-                    currentMonth = 11;
-                    currentYear--;
-                }
-                renderCalendar();
-            });
-
-            document.getElementById('next-month').addEventListener('click', () => {
-                currentMonth++;
-                if (currentMonth > 11) {
-                    currentMonth = 0;
-                    currentYear++;
-                }
-                renderCalendar();
-            });
-
-            renderCalendar();
-        });
+        displayQuestion();
     </script>
 </body>
 </html>
