@@ -5,18 +5,57 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Дартс Математика</title>
     <style>
-        body { font-family: Arial, sans-serif; }
+        body { 
+            font-family: Arial, sans-serif; 
+            padding: 20px;
+            max-width: 600px;
+            margin: auto;
+        }
         #question { font-size: 24px; margin: 20px 0; }
-        input[type="number"] { font-size: 18px; }
-        button { font-size: 18px; margin-top: 10px; }
-        #result { font-size: 20px; color: green; }
-        #error { font-size: 20px; color: red; }
+        input[type="text"], input[type="number"] { 
+            font-size: 18px; 
+            width: 100%;
+            padding: 10px;
+            box-sizing: border-box;
+            margin-bottom: 10px;
+        }
+        button { 
+            font-size: 16px; 
+            margin: 5px;
+            padding: 10px;
+            min-width: 60px;
+        }
+        #buttons-container {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: space-between;
+        }
+        .button-group {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            flex: 1;
+        }
+        #result { font-size: 20px; color: green; margin-top: 10px; }
+        #error { font-size: 20px; color: red; margin-top: 10px; }
+        #control-buttons {
+            margin-top: 10px;
+        }
+        #control-buttons button {
+            min-width: 120px;
+        }
     </style>
 </head>
 <body>
     <h1>Учим дартс математику</h1>
     <div id="question"></div>
-    <input type="number" id="answer" placeholder="Ваш ответ" />
+    <input type="text" id="answer" placeholder="Ваш ответ" readonly />
+    <div id="buttons-container">
+        <div id="t-buttons" class="button-group"></div>
+        <div id="d-buttons" class="button-group"></div>
+        <div id="s-buttons" class="button-group"></div>
+    </div>
+    <div id="control-buttons"></div>
     <button onclick="checkAnswer()">Проверить</button>
     <div id="result"></div>
     <div id="error"></div>
@@ -27,11 +66,9 @@
 { problem: 'T17 + T18 + D16', answer: 137 },
 { problem: 'T18 + 18 + D16', answer: 104 },
 { problem: 'T13 + D16', answer: 71 },
-{ problem: 'None', answer: 169 },
 { problem: 'T20 + T20 + D8', answer: 136 },
 { problem: 'T20 + 11 + D16', answer: 103 },
 { problem: 'T18 + D8', answer: 70 },
-{ problem: 'None', answer: 168 },
 { problem: 'T20 + T15 + D15', answer: 135 },
 { problem: 'T20 + 10 + D16', answer: 102 },
 { problem: 'T19 + D6', answer: 69 },
@@ -39,15 +76,12 @@
 { problem: 'T20 + T14 + D16', answer: 134 },
 { problem: 'T17 + 18 + D16', answer: 101 },
 { problem: 'T16 + D10', answer: 68 },
-{ problem: 'None', answer: 166 },
 { problem: 'T20 + T19 + D8', answer: 133 },
 { problem: 'T20 + D20', answer: 100 },
 { problem: 'T19 + 10 + D16', answer: 99 },
-{ problem: 'None', answer: 165 },
 { problem: 'T20 + T20 + D6', answer: 132 },
 { problem: 'T19 + D20', answer: 97 },
 { problem: 'D16 + D16', answer: 64 },
-{ problem: 'None', answer: 162 },
 { problem: 'T19 + T16 + D12', answer: 129 },
 { problem: 'T20 + D18', answer: 96 },
 { problem: 'T13 + D12', answer: 63 },
@@ -59,7 +93,6 @@
 { problem: 'T20 + T17 + D8', answer: 127 },
 { problem: 'T18 + D20', answer: 94 },
 { problem: 'T15 + D8', answer: 61 },
-{ problem: 'None', answer: 159 },
 { problem: 'T19 + T18 + Bull', answer: 126 },
 { problem: 'T19 + D18', answer: 93 },
 { problem: '20 + D20', answer: 60 },
@@ -149,26 +182,160 @@
 { problem: '8 + D16', answer: 40 },
         ];
 
-        let currentQuestionIndex = 0;
+        let currentQuestion = {};
+        let isReverse = false;
+
+        function getRandomQuestion() {
+            const randomIndex = Math.floor(Math.random() * questions.length);
+            return questions[randomIndex];
+        }
 
         function displayQuestion() {
+            currentQuestion = getRandomQuestion();
+            isReverse = Math.random() < 0.5; // 50% вероятность обратного вопроса
+
             const questionElement = document.getElementById('question');
-            questionElement.textContent = `Какое число закрывается с помощью ${questions[currentQuestionIndex].problem}?`;
-            document.getElementById('answer').value = '';
-            document.getElementById('result').textContent = '';
-            document.getElementById('error').textContent = '';
+            const answerElement = document.getElementById('answer');
+            const resultElement = document.getElementById('result');
+            const errorElement = document.getElementById('error');
+            const tButtonsContainer = document.getElementById('t-buttons');
+            const dButtonsContainer = document.getElementById('d-buttons');
+            const sButtonsContainer = document.getElementById('s-buttons');
+            const controlButtons = document.getElementById('control-buttons');
+
+            resultElement.textContent = '';
+            errorElement.textContent = '';
+            answerElement.value = '';
+            tButtonsContainer.innerHTML = '';
+            dButtonsContainer.innerHTML = '';
+            sButtonsContainer.innerHTML = '';
+            controlButtons.innerHTML = '';
+
+            if (isReverse) {
+                questionElement.textContent = `Какой комбинацией можно закрыть число ${currentQuestion.answer}?`;
+                generateCombinationButtons();
+                answerElement.placeholder = 'Составьте комбинацию';
+                createControlButtons();
+            } else {
+                questionElement.textContent = `Какое число закрывается с помощью ${currentQuestion.problem}?`;
+                generateNumberButtons();
+                answerElement.placeholder = 'Выберите число';
+            }
+        }
+
+        function generateCombinationButtons() {
+            const tButtonsContainer = document.getElementById('t-buttons');
+            const dButtonsContainer = document.getElementById('d-buttons');
+            const sButtonsContainer = document.getElementById('s-buttons');
+
+            // Создание кнопок "T"
+            for (let i = 1; i <= 20; i++) {
+                const button = document.createElement('button');
+                button.textContent = `T${i}`;
+                button.onclick = () => addToCombination(`T${i}`);
+                tButtonsContainer.appendChild(button);
+            }
+
+            // Создание кнопок "D"
+            for (let i = 1; i <= 20; i++) {
+                const button = document.createElement('button');
+                button.textContent = `D${i}`;
+                button.onclick = () => addToCombination(`D${i}`);
+                dButtonsContainer.appendChild(button);
+            }
+
+            // Создание кнопок с числами и добавление Bull и 25
+            const numbers = [...Array(20).keys()].map(i => i + 1).concat([25, 'Bull']);
+            numbers.forEach(num => {
+                const button = document.createElement('button');
+                button.textContent = num.toString();
+                button.onclick = () => addToCombination(num.toString());
+                sButtonsContainer.appendChild(button);
+            });
+        }
+
+        function addToCombination(sector) {
+            const answerElement = document.getElementById('answer');
+            if (answerElement.value.length > 0) {
+                answerElement.value += ' + ' + sector;
+            } else {
+                answerElement.value = sector;
+            }
+        }
+
+        function createControlButtons() {
+            const controlButtons = document.getElementById('control-buttons');
+
+            const deleteButton = document.createElement('button');
+            deleteButton.textContent = 'Удалить последний';
+            deleteButton.onclick = deleteLast;
+            controlButtons.appendChild(deleteButton);
+
+            const clearButton = document.createElement('button');
+            clearButton.textContent = 'Очистить';
+            clearButton.onclick = clearCombination;
+            controlButtons.appendChild(clearButton);
+        }
+
+        function deleteLast() {
+            const answerElement = document.getElementById('answer');
+            const parts = answerElement.value.split(' + ');
+            parts.pop();
+            answerElement.value = parts.join(' + ');
+        }
+
+        function clearCombination() {
+            const answerElement = document.getElementById('answer');
+            answerElement.value = '';
+        }
+
+        function generateNumberButtons() {
+            const buttonsContainer = document.getElementById('buttons-container');
+            buttonsContainer.innerHTML = '';
+            const answerElement = document.getElementById('answer');
+            answerElement.value = '';
+
+            for (let i = 40; i <= 170; i++) {
+                const button = document.createElement('button');
+                button.textContent = i;
+                button.onclick = () => selectNumber(i);
+                buttonsContainer.appendChild(button);
+            }
+        }
+
+        function selectNumber(number) {
+            const answerElement = document.getElementById('answer');
+            answerElement.value = number;
         }
 
         function checkAnswer() {
-            const userAnswer = Number(document.getElementById('answer').value);
-            const correctAnswer = questions[currentQuestionIndex].answer;
+            const userAnswer = document.getElementById('answer').value.trim();
+            const resultElement = document.getElementById('result');
+            const errorElement = document.getElementById('error');
 
-            if (userAnswer === correctAnswer) {
-                document.getElementById('result').textContent = 'Правильно!';
-                currentQuestionIndex = (currentQuestionIndex + 1) % questions.length;
-                displayQuestion();
+            resultElement.textContent = '';
+            errorElement.textContent = '';
+
+            if (isReverse) {
+                const correctAnswer = currentQuestion.problem.replace(/\s+/g, '').toLowerCase();
+                const userAnswerFormatted = userAnswer.replace(/\s+/g, '').toLowerCase();
+
+                if (userAnswerFormatted === correctAnswer) {
+                    resultElement.textContent = 'Правильно!';
+                    setTimeout(displayQuestion, 1000);
+                } else {
+                    errorElement.textContent = 'Неправильно, попробуйте еще раз!';
+                }
             } else {
-                document.getElementById('error').textContent = 'Неправильно, попробуйте еще раз!';
+                const userNumber = Number(userAnswer);
+                const correctNumber = currentQuestion.answer;
+
+                if (userNumber === correctNumber) {
+                    resultElement.textContent = 'Правильно!';
+                    setTimeout(displayQuestion, 1000);
+                } else {
+                    errorElement.textContent = 'Неправильно, попробуйте еще раз!';
+                }
             }
         }
 
